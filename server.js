@@ -28,11 +28,21 @@ io.on('connection', (socket) => {
           content: `<i>${userName} has joined the conversation!`,
         });
     });
+
     socket.on('message', (message) => {
         console.log('Oh, I\'ve got something from ' + socket.id);
         messages.push(message);
         socket.broadcast.emit('message', message);
     });
-    socket.on('disconnect', () => { console.log('Oh, socket ' + socket.id + ' has left') });
-    console.log('I\'ve added a listener on message event \n');
+
+    socket.on('disconnect', () => { 
+        if (users.length > 0) {
+            userName = users.filter((user) => user.id === socket.id)[0].name;
+            loggedUsers = users.filter((user) => user.id !== socket.id);
+            socket.broadcast.emit("message", {
+              author: "Chatbot",
+              content: `<i>${userName} has left the conversation... :(`,
+            });
+        }
+    });
 });
