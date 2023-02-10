@@ -10,6 +10,7 @@ const path = require('path');
 const io = socket(server);
 
 const messages = [];
+const users = [];
 
 app.use(express.static(path.join(__dirname, '/client/')));
 
@@ -20,6 +21,13 @@ app.get('*', (req, res) => {
 
 io.on('connection', (socket) => {
     console.log('New client! Its id - ' + socket.id);
+    socket.on("join", (userName) => {
+        users.push({ id: socket.id, name: userName });
+        socket.broadcast.emit("message", {
+          author: "Chatbot",
+          content: `<i>${userName} has joined the conversation!`,
+        });
+    });
     socket.on('message', (message) => {
         console.log('Oh, I\'ve got something from ' + socket.id);
         messages.push(message);
