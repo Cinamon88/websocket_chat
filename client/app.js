@@ -25,15 +25,21 @@ const login = (e) => {
     }
 };
 
-const sendMessage = (e) => {
+function sendMessage(e) {
     e.preventDefault();
-    if (messageContentInput.value.length > 0) {
-        addMessage(userName, messageContentInput.value);
-        messageContentInput.value = "";
-    } else {
-        alert("Please enter a message");
+  
+    let messageContent = messageContentInput.value;
+  
+    if(!messageContent.length) {
+      alert('You have to type something!');
     }
-};
+    else {
+      addMessage(userName, messageContent);
+      socket.emit('message', { author: userName, content: messageContent })
+      messageContentInput.value = '';
+    }
+  
+}
 
 function addMessage(author, content) {
     const message = document.createElement('li');
